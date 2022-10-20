@@ -1,23 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import ImageCropper from "./components/ImageCropper";
 
 function App() {
+  const [imageToCrop, setImageToCrop] = useState(undefined);
+  const [croppedImage, setCroppedImage] = useState(undefined);
+
+  const onUploadFile = (event) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const reader = new FileReader();
+
+      reader.addEventListener("load", () => {
+        const image = reader.result;
+
+        setImageToCrop(image);
+      });
+
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  };
+
+  useEffect(() => console.log(croppedImage), [croppedImage]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <input type="file" accept="image/*" onChange={onUploadFile} />
+      <div>
+        <ImageCropper
+          imageToCrop={imageToCrop}
+          onImageCropped={(croppedImage) => setCroppedImage(croppedImage)}
+        />
+      </div>
+      {croppedImage && (
+        <div>
+          <h2>Cropped Image</h2>
+          <img alt="Cropped Img" src={croppedImage} />
+        </div>
+      )}
     </div>
   );
 }
